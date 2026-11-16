@@ -24,7 +24,9 @@ re-run `install.sh` (usually not even needed) is the whole update story.
 blue tool-call backgrounds.
 
 **Agents & prompts**: `agents/` (scout, planner, reviewer, worker) and
-`prompts/` (`/implement`, `/scout-and-plan`, `/implement-and-review`).
+`prompts/` — a single `/workflow` command: plan (scout → planner),
+**stop for approval**, implement (worker), review against the original
+request (reviewer), fix (worker).
 
 **CLI**: `bin/pies` — runs `pi` under its proper name.
 

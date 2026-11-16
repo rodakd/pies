@@ -13,9 +13,9 @@ Vendored from Pi's official example
 - **Agents** (`~/.pi/agent/agents/*.md` → `agents/` here):
   `scout` (recon, read-only+), `planner` (read-only planning),
   `reviewer` (review), `worker` (general-purpose, all tools).
-- **Workflow prompts** (`~/.pi/agent/prompts/*.md` → `prompts/` here):
-  `/implement` (scout→planner→worker), `/scout-and-plan` (scout→planner),
-  `/implement-and-review` (worker→reviewer→worker).
+- **Workflow prompt** (`~/.pi/agent/prompts/*.md` → `prompts/` here):
+  a single `/workflow` — plan (scout→planner), **stop for approval**, then
+  worker → reviewer (against the original request) → worker fixes.
 
 **Local changes vs upstream**
 
