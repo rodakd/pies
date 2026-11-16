@@ -23,8 +23,9 @@ re-run `install.sh` (usually not even needed) is the whole update story.
 (Alacritty `nord.toml`), blue prompt border ladder by thinking level,
 blue tool-call backgrounds.
 
-**Agents & prompts**: `agents/` (scout, planner, reviewer, worker) and
-`prompts/` — a single `/workflow` command: plan (scout → planner),
+**Agents & prompts**: `agents/` — `planner` + `reviewer` pinned to
+`openrouter/~z-ai/glm-latest` (the thinking work), `scout` + `worker` to
+`openrouter/~deepseek/deepseek-flash-latest` (mechanical); and `prompts/` — a single `/workflow` command: plan (scout → planner),
 **stop for approval**, implement (worker), review against the original
 request (reviewer), fix (worker).
 

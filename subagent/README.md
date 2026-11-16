@@ -19,13 +19,14 @@ Vendored from Pi's official example
 
 **Local changes vs upstream**
 
-1. Stripped the sample agents' `model:` pins (claude-haiku/sonnet) so agents
-   inherit this session's active model and thinking level — except `worker`,
-   pinned to `model: openrouter/deepseek/deepseek-v4.1-flash`. Always pin the
-   **provider-qualified** form (`provider/model-id`): a bare id can be
-   ambiguous across authenticated providers and the child then exits with a
-   startup error (e.g. bare `z-ai/glm-5.3-flash` matched both `nvidia` and
-   `openrouter`).
+1. Re-pinned the sample agents' `model:` fields (claude-haiku/sonnet →
+   our openrouter models) by intelligence: `planner` + `reviewer` (thinking
+   work) → `openrouter/~z-ai/glm-latest`; `scout` + `worker` (mechanical
+   recon/implementation) → `openrouter/~deepseek/deepseek-flash-latest`.
+   Always pin the **provider-qualified** form (`provider/model-id`): a bare
+   id can be ambiguous across authenticated providers and the child then
+   exits with a startup error (e.g. bare `z-ai/glm-5.3-flash` matched both
+   `nvidia` and `openrouter`).
 2. The tool description now enumerates the discovered agent roster
    (upstream lists only the modes), so the model can delegate on its own
    initiative instead of discovering agents by trial and error.
