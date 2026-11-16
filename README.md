@@ -14,7 +14,7 @@ re-run `install.sh` (usually not even needed) is the whole update story.
 |---|---|
 | `pies.ts` | Customization entry (the "init.lua" equivalent). Hides the "Thinking..." label (empty label = hidden runs render nothing). |
 | `dog-header.ts` | Startup header: multi-line pixel-art shiba (22×14 half-block render) replaces the pi logo, subtitle `🐶 woof! · pies v… 🐶`. `/builtin-header` restores stock. |
-| `dog-footer.ts` | Footer stats, doggo edition: `👃 sniffed <in> 🔊 barked <out> 🦴 fetched <cache R> 💾 buried <cache W> 🎾 caught <hit%> 🏠 den <tokens>/<window>`. `/builtin-footer` restores stock. |
+| `dog-footer.ts` | Footer stats, doggo edition: `👃 sniffed <in> 💬 barked <out> 🦴 fetched <cache R> 💾 buried <cache W> 🎾 caught <hit%> 🏠 den <tokens>/<window>`. `/builtin-footer` restores stock. |
 | `dog-editor.ts` | `🐶` prefix in the prompt input (click mapping + wrapping compensated). |
 | `working-words.ts` | The "Working" loader above the prompt rotates Claude-Code-style gerunds: `⠙ Bamboozling…`, `⠙ Hornswoggling…`, … |
 | `subagent/` | Vendored subagent tool (delegation to `scout`/`planner`/`reviewer`/`worker`) from pi's official example — see `subagent/README.md` for local changes. |

@@ -12,7 +12,7 @@
 //   built-in                          → doggo
 //   ↑37   (input tokens)              → 👃 sniffed 37         (nose = bright,
 //                                                             🐾 was dark brown)
-//   ↓49   (output tokens)             → 🔊 barked 49
+//   ↓49   (output tokens)             → 💬 barked 49
 //   R3.2k (cache read)                → 🦴 fetched 3.2k
 //   W     (cache write)               → 💾 buried 2.1k        (only if > 0)
 //   CH98.9% (cache hit)               → 🎾 caught 98.9%
@@ -143,7 +143,7 @@ export default function dogFooter(pi: ExtensionAPI) {
 					const u = collectUsage(session);
 					const parts: string[] = [];
 					parts.push(`👃 ${theme.fg("dim", `sniffed ${fmtTokens(u.input)}`)}`);
-					parts.push(`🔊 ${theme.fg("dim", `barked ${fmtTokens(u.output)}`)}`);
+					parts.push(`💬 ${theme.fg("dim", `barked ${fmtTokens(u.output)}`)}`);
 					if (u.cacheRead) parts.push(`🦴 ${theme.fg("dim", `fetched ${fmtTokens(u.cacheRead)}`)}`);
 					if (u.cacheWrite) parts.push(`💾 ${theme.fg("dim", `buried ${fmtTokens(u.cacheWrite)}`)}`);
 					if (u.catchRate !== undefined && (u.cacheRead > 0 || u.cacheWrite > 0)) {
