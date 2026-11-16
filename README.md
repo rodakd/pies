@@ -2,19 +2,6 @@
 
 A dog-themed [pi](https://pi.dev) coding agent setup. pi, but it's a dog.
 
-```
-
-      ▄▄██████████▄▄
-  ▄████████████████████▄
-  ██████████████████████
-  ██████████████████████
-  ██████████████████████
-  ▀▀▀▀▀████████████▀▀▀▀▀
-         ▀▀████▀▀
-
-🐶 woof! · pies v1.5.2 🐶
-```
-
 Everything lives in this repo and is symlinked into pi's config dir
 (`~/.pi/agent`) by `install.sh` — nothing is copied, so `git pull` +
 re-run `install.sh` (usually not even needed) is the whole update story.
