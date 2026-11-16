@@ -1,0 +1,19 @@
+{
+  "lastChangelogVersion": "1.5.2",
+  "theme": "nord",
+  "defaultProvider": "openrouter",
+  "defaultModel": "~z-ai/glm-latest",
+  "compaction": {
+    "modelOverrides": {
+      "openrouter/z-ai/glm-5.3-flash": {
+        "reserveTokens": 748576
+      }
+    }
+  },
+  "hideThinkingBlock": true,
+  "enabledModels": [
+    "openrouter/~deepseek/deepseek-flash-latest",
+    "openrouter/~z-ai/glm-flash-latest",
+    "openrouter/~z-ai/glm-latest"
+  ]
+}

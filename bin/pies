@@ -1,0 +1,4 @@
+#!/bin/sh
+# pies — invoke pi (the coding agent) under its proper name.
+# Vendored at ~/repos/pies/bin/pies, symlinked to ~/bin/pies (on PATH).
+exec pi "$@"
