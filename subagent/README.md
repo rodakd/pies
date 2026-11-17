@@ -11,32 +11,41 @@ Vendored from Pi's official example
   parallel (`{ tasks: [...] }`, max 8 / 4 concurrent), and chain
   (`{ chain: [...] }` with a `{previous}` output placeholder).
 - **Agents** (`~/.pi/agent/agents/*.md` → `agents/` here):
-  `scout` (read-only recon/triage), `planner` (read-only planning),
-  `reviewer` (read-only review), `worker` (general-purpose, all tools).
+  `scout` (read-only recon/triage), `worker` (general-purpose, all tools),
+  both cheap Flash; `planner` (read-only planning), `reviewer` (read-only
+  review), and `fixer` (escalation implementation, all tools) on Sol,
+  **opt-in**: used only on explicit user request or an approved proposal
+  naming them and their scope.
 - **Workflow prompt** (`~/.pi/agent/prompts/*.md` → `prompts/` here):
-  a single `/workflow` — plan (scout→planner), **stop for approval**, then
-  worker implements; a cheap read-only scout audits task-owned changes
-  against the original request and approved plan; the strong reviewer
-  inspects those hunks/call sites and broadens if needed; worker fixes
-  findings, at most two rounds.
+  a single `/workflow` — scout recon, the main model plans, **stop for
+  approval**, worker implements; a cheap read-only scout audits task-owned
+  changes against the original request and approved plan; the main model
+  reviews those hunks/call sites and broadens if needed; worker fixes
+  findings, at most two rounds; failures escalate to `fixer` only by proposal.
+  planner/reviewer/fixer remain opt-in additions.
 
 **Local changes vs upstream**
 
 1. Re-pinned the sample agents' `model:` fields (claude-haiku/sonnet →
    our OpenRouter models) by cost and role: `planner` + `reviewer`
-   (bounded reasoning) → `openrouter/~openai/gpt-sol-latest:high`;
+   (bounded reasoning) and `fixer` (hard implementation) →
+   `openrouter/~openai/gpt-sol-latest:high`;
    `scout` + `worker` (recon/mechanical implementation) →
    `openrouter/~deepseek/deepseek-flash-latest:high`.
    Always pin the **provider-qualified** form (`provider/model-id`): a bare
    id can be ambiguous across authenticated providers and the child then
    exits with a startup error.
 2. The tool description now enumerates the discovered agent roster
-   (upstream lists only the modes), so the model can delegate on its own
-   initiative instead of discovering agents by trial and error.
+   (upstream lists only the modes), so the model delegates scout/worker on
+   its own initiative instead of discovering agents by trial and error; the
+   planner/reviewer/fixer descriptions mark them opt-in, pending explicit
+   user request or approval.
 3. `settings.json` sets `defaultProvider: "openrouter"` and
-   `defaultModel: "~openai/gpt-sol-latest"`, with per-model thinking levels
-   high for both Sol and DeepSeek Flash. Model defaults apply to new
-   sessions; use `/model` to change an existing session.
+   `defaultModel: "~deepseek/deepseek-flash-latest"`, with per-model thinking
+   levels high for both Flash and Sol. Model defaults apply to new sessions;
+   use `/model` to change an existing session. Planning and review run on
+   the main model by default; Sol planner/reviewer/fixer stay opt-in because
+   they cost more.
 4. **Recursion guard**: spawned children get `PI_SUBAGENT_DEPTH` in their
    environment, and the extension does not register the `subagent` tool in a
    process that is itself a subagent (`depth >= MAX_SUBAGENT_DEPTH`, default 1).
@@ -79,6 +88,8 @@ and prints a manual merge note instead of overwriting it.
 
 Each subagent is a full `pi` run: its own context window, its own API usage.
 Child usage is shown per-result but **not** added to this session's totals.
-Routing work to cheaper children can reduce cost when the task matches their
-scope, but savings depend on the workload and subprocess overhead; there is
-no guaranteed saving.
+Scout and worker are Flash; planner, reviewer, and fixer are Sol and cost
+more, so they require explicit permission per dispatch. Routing scout/worker work to
+cheaper children can reduce cost when the task matches their scope, but
+savings depend on the workload and subprocess overhead; there is no
+guaranteed saving.

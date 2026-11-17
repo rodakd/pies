@@ -2,7 +2,7 @@
   "lastChangelogVersion": "1.5.2",
   "theme": "nord",
   "defaultProvider": "openrouter",
-  "defaultModel": "~openai/gpt-sol-latest",
+  "defaultModel": "~deepseek/deepseek-flash-latest",
   "modelThinkingLevels": {
     "openrouter/~openai/gpt-sol-latest": "high",
     "openrouter/~deepseek/deepseek-flash-latest": "high"

@@ -17,28 +17,33 @@ re-run `install.sh` (usually not even needed) is the whole update story.
 | `dog-footer.ts` | Footer stats, doggo edition: `👃 sniffed <in> 💬 barked <out> 🦴 fetched <cache R> 💾 buried <cache W> 🎾 caught <hit%> 🏠 den <tokens>/<window>`. `/builtin-footer` restores stock. |
 | `dog-editor.ts` | `🐶` prefix in the prompt input (click mapping + wrapping compensated). |
 | `working-words.ts` | The "Working" loader above the prompt rotates Claude-Code-style gerunds: `⠙ Bamboozling…`, `⠙ Hornswoggling…`, … |
-| `subagent/` | Vendored subagent tool (delegation to `scout`/`planner`/`reviewer`/`worker`) from pi's official example — see `subagent/README.md` for local changes. |
+| `subagent/` | Vendored subagent tool (delegation to `scout`/`worker`/`planner`/`reviewer`/`fixer`) from pi's official example — see `subagent/README.md` for local changes. |
 
 **Theme** (`themes/nord.json`): Nord palette matching the terminal
 (Alacritty `nord.toml`), blue prompt border ladder by thinking level,
 blue tool-call backgrounds.
 
-**Agents & prompts**: `agents/` — `planner` + `reviewer` on
-`openrouter/~openai/gpt-sol-latest:high`, `scout` + `worker` on
-`openrouter/~deepseek/deepseek-flash-latest:high`; global instructions in
-`AGENTS.md` make the main model a coordinator that routes broad recon to
-scout and mechanical work to worker. `prompts/` — one `/workflow`:
-scout → planner, **stop for approval**, worker implements, a cheap read-only
-scout triages only task-owned changes, the strong reviewer audits those
+**Agents & prompts**: `agents/` — `scout` + `worker` on
+`openrouter/~deepseek/deepseek-flash-latest:high` (recon and mechanical work),
+`planner` + `reviewer` + `fixer` on `openrouter/~openai/gpt-sol-latest:high` as
+opt-in: they run only when you explicitly request them or approve a proposed
+dispatch naming them and its scope. `fixer` is the escalation path — a Sol
+worker with full tools for work a cheap `worker` could not complete. Global
+instructions in `AGENTS.md` make the main model the
+coordinator that plans and reviews in its own context by default, routing
+broad recon to scout and mechanical work to worker. `prompts/` — one
+`/workflow`: scout recon, **stop for approval**, worker implements, a cheap
+read-only scout triages only task-owned changes, the main model reviews those
 hunks/call sites against the original request and plan, and the worker fixes
-findings (at most two fix/review rounds).
+findings (at most two fix/review rounds). Escalation to `fixer` is proposed,
+never automatic. No step adds a paid planner, reviewer, or fixer run on its own.
 
-**Models & cost**: `settings.json` starts new sessions on OpenRouter Sol at
-high thinking; the enabled model scope cycles OpenRouter Flash and Sol.
+**Models & cost**: `settings.json` starts new sessions on OpenRouter DeepSeek
+Flash at high thinking; the enabled model scope cycles Flash and Sol.
 Existing sessions keep their selection — use `/model` (and `/thinking`).
-Child runs are separate `pi` processes with their own usage, not added to the
-parent's totals. Routing work to cheaper children can reduce cost when the
-task matches their scope, but savings depend on the workload.
+Scout and worker children are Flash; planner, reviewer, and fixer are Sol and
+cost more, so they stay opt-in. Child runs are separate `pi` processes with their
+own usage, not added to the parent's totals.
 
 **CLI**: `bin/pies` — runs `pi` under its proper name.
 
@@ -73,7 +78,7 @@ pies/
 ├── extensions/         # dog-editor, dog-footer, dog-header, working-words
 ├── subagent/           # vendored subagent tool
 ├── themes/nord.json    # Nord theme
-├── agents/             # scout, planner, reviewer, worker
+├── agents/             # scout, worker, planner, reviewer, fixer
 └── prompts/            # /workflow prompt
 ```
 

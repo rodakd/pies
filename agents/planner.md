@@ -1,6 +1,6 @@
 ---
 name: planner
-description: Turns compressed findings and requirements into an executable implementation plan
+description: "Opt-in: only on explicit user request or approved proposal. Turns compressed findings and requirements into an executable implementation plan"
 tools: read, grep, find, ls
 model: openrouter/~openai/gpt-sol-latest:high
 ---

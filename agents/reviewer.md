@@ -1,6 +1,6 @@
 ---
 name: reviewer
-description: Strong read-only review against the original request and approved plan
+description: "Opt-in: only on explicit user request or approved proposal. Strong read-only review against the original request and approved plan"
 tools: read, grep, find, ls, bash
 model: openrouter/~openai/gpt-sol-latest:high
 ---
