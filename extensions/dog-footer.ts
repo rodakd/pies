@@ -16,7 +16,8 @@
 //   R3.2k (cache read)                → 🦴 fetched 3.2k
 //   W     (cache write)               → 💾 buried 2.1k        (only if > 0)
 //   CH98.9% (cache hit)               → 🎾 caught 98.9%
-//   $0.000 (cost)                     → (dropped — not shown)
+//   $0.000 (cost)                     → 💰 $0.000 (cost, same format as
+//                                        built-in)
 //   0.3%/1.0M (auto) (context)        → 🏠 den 3.0k/1.0M (auto)  (tokens used /
 //                                        window, whole k — not %; color still
 //                                        thresholds at 70%/90% of window)
@@ -149,7 +150,7 @@ export default function dogFooter(pi: ExtensionAPI) {
 					if (u.catchRate !== undefined && (u.cacheRead > 0 || u.cacheWrite > 0)) {
 						parts.push(`🎾 ${theme.fg("dim", `caught ${u.catchRate.toFixed(1)}%`)}`);
 					}
-					// No cost ($) — deliberately dropped from the doggo line.
+					if (u.cost > 0) parts.push(`💰 ${theme.fg("dim", `$${u.cost.toFixed(3)}`)}`);
 
 					const contextUsage = ctx.getContextUsage();
 					const contextWindow = contextUsage?.contextWindow ?? ctx.model?.contextWindow ?? 0;

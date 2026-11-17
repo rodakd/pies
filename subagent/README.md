@@ -11,27 +11,32 @@ Vendored from Pi's official example
   parallel (`{ tasks: [...] }`, max 8 / 4 concurrent), and chain
   (`{ chain: [...] }` with a `{previous}` output placeholder).
 - **Agents** (`~/.pi/agent/agents/*.md` → `agents/` here):
-  `scout` (recon, read-only+), `planner` (read-only planning),
-  `reviewer` (review), `worker` (general-purpose, all tools).
+  `scout` (read-only recon/triage), `planner` (read-only planning),
+  `reviewer` (read-only review), `worker` (general-purpose, all tools).
 - **Workflow prompt** (`~/.pi/agent/prompts/*.md` → `prompts/` here):
   a single `/workflow` — plan (scout→planner), **stop for approval**, then
-  worker → reviewer (against the original request) → worker fixes.
+  worker implements; a cheap read-only scout audits task-owned changes
+  against the original request and approved plan; the strong reviewer
+  inspects those hunks/call sites and broadens if needed; worker fixes
+  findings, at most two rounds.
 
 **Local changes vs upstream**
 
 1. Re-pinned the sample agents' `model:` fields (claude-haiku/sonnet →
-   our openrouter models) by intelligence: `planner` + `reviewer` (thinking
-   work) → `openrouter/~z-ai/glm-latest`; `scout` + `worker` (mechanical
-   recon/implementation) → `openrouter/~deepseek/deepseek-flash-latest`.
+   our OpenRouter models) by cost and role: `planner` + `reviewer`
+   (bounded reasoning) → `openrouter/~openai/gpt-sol-latest:high`;
+   `scout` + `worker` (recon/mechanical implementation) →
+   `openrouter/~deepseek/deepseek-flash-latest:high`.
    Always pin the **provider-qualified** form (`provider/model-id`): a bare
    id can be ambiguous across authenticated providers and the child then
-   exits with a startup error (e.g. bare `z-ai/glm-5.3-flash` matched both
-   `nvidia` and `openrouter`).
+   exits with a startup error.
 2. The tool description now enumerates the discovered agent roster
    (upstream lists only the modes), so the model can delegate on its own
    initiative instead of discovering agents by trial and error.
-3. The `settings.json` `defaultModel: "z-ai/glm-5.3"` only works bare because
-   openrouter alone offers that id.
+3. `settings.json` sets `defaultProvider: "openrouter"` and
+   `defaultModel: "~openai/gpt-sol-latest"`, with per-model thinking levels
+   high for both Sol and DeepSeek Flash. Model defaults apply to new
+   sessions; use `/model` to change an existing session.
 4. **Recursion guard**: spawned children get `PI_SUBAGENT_DEPTH` in their
    environment, and the extension does not register the `subagent` tool in a
    process that is itself a subagent (`depth >= MAX_SUBAGENT_DEPTH`, default 1).
@@ -60,12 +65,20 @@ arbitrary bash through subagents.
 ## Layout & symlinks
 
 ```
-~/.pi/agent/extensions/subagent -> ~/repos/dotfiles/pi/subagent
-~/.pi/agent/agents/*.md         -> ~/repos/dotfiles/pi/agents/*.md
-~/.pi/agent/prompts/*.md       -> ~/repos/dotfiles/pi/prompts/*.md
+~/.pi/agent/extensions/subagent -> ~/repos/pies/subagent
+~/.pi/agent/agents/*.md         -> ~/repos/pies/agents/*.md
+~/.pi/agent/prompts/*.md       -> ~/repos/pies/prompts/*.md
+~/.pi/agent/AGENTS.md          -> ~/repos/pies/AGENTS.md
+~/.pi/agent/settings.json      -> ~/repos/pies/settings.json
 ```
+
+`install.sh` leaves an existing unrelated `~/.pi/agent/AGENTS.md` untouched
+and prints a manual merge note instead of overwriting it.
 
 ## Cost model
 
 Each subagent is a full `pi` run: its own context window, its own API usage.
 Child usage is shown per-result but **not** added to this session's totals.
+Routing work to cheaper children can reduce cost when the task matches their
+scope, but savings depend on the workload and subprocess overhead; there is
+no guaranteed saving.

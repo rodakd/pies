@@ -23,11 +23,22 @@ re-run `install.sh` (usually not even needed) is the whole update story.
 (Alacritty `nord.toml`), blue prompt border ladder by thinking level,
 blue tool-call backgrounds.
 
-**Agents & prompts**: `agents/` — `planner` + `reviewer` pinned to
-`openrouter/~z-ai/glm-latest` (the thinking work), `scout` + `worker` to
-`openrouter/~deepseek/deepseek-flash-latest` (mechanical); and `prompts/` — a single `/workflow` command: plan (scout → planner),
-**stop for approval**, implement (worker), review against the original
-request (reviewer), fix (worker).
+**Agents & prompts**: `agents/` — `planner` + `reviewer` on
+`openrouter/~openai/gpt-sol-latest:high`, `scout` + `worker` on
+`openrouter/~deepseek/deepseek-flash-latest:high`; global instructions in
+`AGENTS.md` make the main model a coordinator that routes broad recon to
+scout and mechanical work to worker. `prompts/` — one `/workflow`:
+scout → planner, **stop for approval**, worker implements, a cheap read-only
+scout triages only task-owned changes, the strong reviewer audits those
+hunks/call sites against the original request and plan, and the worker fixes
+findings (at most two fix/review rounds).
+
+**Models & cost**: `settings.json` starts new sessions on OpenRouter Sol at
+high thinking; the enabled model scope cycles OpenRouter Flash and Sol.
+Existing sessions keep their selection — use `/model` (and `/thinking`).
+Child runs are separate `pi` processes with their own usage, not added to the
+parent's totals. Routing work to cheaper children can reduce cost when the
+task matches their scope, but savings depend on the workload.
 
 **CLI**: `bin/pies` — runs `pi` under its proper name.
 
@@ -41,22 +52,29 @@ git clone git@github.com:rodakd/pies.git ~/repos/pies
 pi login          # or: pies login — provider auth stays local
 ```
 
-Then run `pies`. After editing anything here, `/reload` inside pi
-hot-reloads extensions and the theme.
+`install.sh` also links a global `AGENTS.md`. If `~/.pi/agent/AGENTS.md`
+already exists and is not a link to this repo's file, it is left untouched
+with a manual merge note.
+
+Then run `pies`. After editing anything here, `/reload` inside pi refreshes
+extensions, themes, prompts, and instructions. Model defaults in
+`settings.json` apply to new sessions; use `/model` (and `/thinking`) to
+change the current session.
 
 ## Layout
 
 ```
 pies/
 ├── install.sh          # symlink installer (idempotent)
-├── settings.json       # theme + model prefs (symlinked to ~/.pi/agent)
+├── AGENTS.md           # global coordinator/routing instructions
+├── settings.json       # theme + model routing prefs (symlinked to ~/.pi/agent)
 ├── pies.ts             # customization entry
 ├── bin/pies            # CLI wrapper
 ├── extensions/         # dog-editor, dog-footer, dog-header, working-words
 ├── subagent/           # vendored subagent tool
 ├── themes/nord.json    # Nord theme
 ├── agents/             # scout, planner, reviewer, worker
-└── prompts/            # workflow prompts
+└── prompts/            # /workflow prompt
 ```
 
 Not in the repo (local only): `~/.pi/agent/auth.json` (credentials),

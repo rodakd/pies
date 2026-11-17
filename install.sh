@@ -32,6 +32,19 @@ link "$REPO/subagent" "$AGENT/extensions/subagent"
 # Theme
 link "$REPO/themes/nord.json" "$AGENT/themes/nord.json"
 
+# Global instructions. Preserve unrelated user-level AGENTS.md rather than
+# replacing it silently.
+AGENTS_LINK="$AGENT/AGENTS.md"
+AGENTS_SRC="$REPO/AGENTS.md"
+if [ -e "$AGENTS_LINK" ] && [ "$AGENTS_LINK" -ef "$AGENTS_SRC" ]; then
+	:
+elif [ -e "$AGENTS_LINK" ] || [ -L "$AGENTS_LINK" ]; then
+	printf '%s\n' "! Preserved existing $AGENTS_LINK (not a link to $AGENTS_SRC)."
+	printf '%s\n' "  Merge routing instructions from $AGENTS_SRC into your existing file manually."
+else
+	link "$AGENTS_SRC" "$AGENTS_LINK"
+fi
+
 # Subagents + workflow prompts
 for f in "$REPO"/agents/*.md; do
 	link "$f" "$AGENT/agents/$(basename "$f")"
